@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StudyForge — Complete Screen Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#07070F;font-family:'DM Sans',sans-serif;color:#fff;min-height:100vh;}
+
+/* Layout */
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* Sidebar */
+.sidebar{width:260px;background:#0A0A14;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.sidebar-logo{display:flex;align-items:center;gap:9px;padding:20px 18px 16px;}
+.logo-hex{width:32px;height:32px;background:rgba(124,111,247,.12);border:1.5px solid #7C6FF7;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#fff;letter-spacing:-.3px;}
+.logo-text span{color:#7C6FF7;}
+.sidebar-section{padding:6px 12px 2px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);font-weight:500;}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:8px 14px;border-radius:8px;margin:1px 8px;cursor:pointer;border:none;background:none;width:calc(100% - 16px);text-align:left;transition:background .15s;}
+.nav-btn:hover{background:rgba(255,255,255,.04);}
+.nav-btn.active{background:rgba(124,111,247,.15);}
+.nav-btn .nb-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;}
+.nav-btn.active .nb-icon{background:rgba(124,111,247,.2);}
+.nav-btn .nb-label{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.45);flex:1;}
+.nav-btn.active .nb-label{color:#A78BFA;font-weight:500;}
+.nav-btn .nb-badge{background:#7C6FF7;border-radius:4px;padding:1px 5px;font-size:9px;color:#fff;}
+.nav-btn .nb-tag{font-size:9px;background:rgba(255,255,255,.08);border-radius:4px;padding:2px 5px;color:rgba(255,255,255,.3);}
+.sidebar-divider{height:.5px;background:rgba(255,255,255,.06);margin:8px 0;}
+
+/* Main content */
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.topbar{height:52px;background:#0D0D18;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;}
+.topbar-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#fff;}
+.topbar-subtitle{font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.tb-pill{background:rgba(255,255,255,.06);border-radius:6px;padding:5px 10px;font-size:10px;color:rgba(255,255,255,.4);cursor:pointer;}
+.tb-pill.active{background:rgba(124,111,247,.15);color:#A78BFA;}
+
+/* Phone viewport */
+.phone-viewport{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#07070F;position:relative;}
+.phone-frame{width:320px;height:640px;border-radius:44px;border:3px solid #1E1E3A;background:#0D0D18;overflow:hidden;position:relative;box-shadow:0 0 0 1px rgba(124,111,247,.15);}
+.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:24px;border-radius:0 0 14px 14px;background:#0A0A10;z-index:100;}
+.phone-screen{width:100%;height:100%;overflow:hidden;position:relative;}
+
+/* Screen base */
+.screen{width:100%;height:100%;display:none;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;}
+
+/* Bottom nav */
+.bnav{position:absolute;bottom:0;left:0;right:0;height:60px;background:#111120;border-top:1px solid rgba(255,255,255,.05);display:flex;z-index:50;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:none;}
+.bni svg{width:18px;height:18px;}
+.bni span{font-size:8px;font-family:'DM Sans',sans-serif;color:rgba(255,255,255,.3);}
+.bni.a svg path,.bni.a svg rect,.bni.a svg circle{stroke:#7C6FF7 !important;}
+.bni.a span{color:#7C6FF7;}
+.bni.center{position:relative;}
+.bni.center .plus-btn{width:44px;height:44px;background:#7C6FF7;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;}
+
+/* Status bar */
+.status-bar{height:28px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;}
+.status-time{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:#fff;}
+.status-icons{display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.6);}
+
+/* Common components */
+.screen-header{padding:6px 18px 10px;flex-shrink:0;}
+.screen-title{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#fff;}
+.screen-sub{font-family:'DM Sans',sans-serif;font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;}
+.scroll-body{flex:1;overflow-y:auto;padding:0 18px;padding-bottom:70px;}
+.scroll-body::-webkit-scrollbar{display:none;}
+
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:12px 13px;}
+.card+.card{margin-top:8px;}
+.card-title{font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;color:#fff;}
+.card-sub{font-family:'DM Sans',sans-serif;font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;}
+
+.prog{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:6px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;background:#7C6FF7;}
+
+.chip{display:inline-flex;align-items:center;border-radius:5px;padding:3px 8px;font-size:9px;font-family:'DM Sans',sans-serif;}
+.chip-v{background:rgba(124,111,247,.15);color:#A78BFA;}
+.chip-a{background:rgba(244,162,39,.12);color:#F4A227;}
+.chip-g{background:rgba(16,185,129,.1);color:#34D399;}
+.chip-r{background:rgba(239,68,68,.1);color:#F87171;}
+.chip-o{background:rgba(232,93,47,.12);color:#E85D2F;}
+
+.btn-primary{background:#7C6FF7;border:none;border-radius:11px;padding:13px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;color:#fff;cursor:pointer;width:100%;}
+.btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;color:rgba(255,255,255,.6);cursor:pointer;width:100%;}
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+.btn-row .btn-primary,.btn-row .btn-ghost{flex:1;}
+
+.field{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.5);margin-bottom:8px;}
+.field.focused{border-color:#7C6FF7;color:#A78BFA;}
+
+.section-label{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);margin:14px 0 7px;}
+
+.sep{height:.5px;background:rgba(255,255,255,.06);margin:6px 0;}
+
+/* ---- Screen-specific ---- */
+
+/* S01 Splash */
+#s-splash{background:linear-gradient(160deg,#0A0A14,#0D0D18 50%,#120A1F);align-items:center;justify-content:center;gap:14px;}
+.splash-hex{width:72px;height:72px;background:rgba(124,111,247,.1);border:2px solid #7C6FF7;border-radius:18px;display:flex;align-items:center;justify-content:center;}
+.splash-wm{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:#fff;}
+.splash-wm span{color:#7C6FF7;}
+.splash-tag{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.2em;text-transform:uppercase;}
+.splash-loader{width:56px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-top:32px;}
+.splash-loader-fill{width:65%;height:100%;background:#7C6FF7;border-radius:2px;}
+
+/* S02 Onboarding */
+#s-onboard{background:#0A0A14;}
+.onboard-skip{font-family:'DM Sans',sans-serif;font-size:10px;color:rgba(255,255,255,.3);text-align:right;padding:8px 18px 0;cursor:pointer;}
+.onboard-illo{flex:1;margin:12px 18px;background:rgba(124,111,247,.06);border:1px solid rgba(124,111,247,.15);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.onboard-dots{display:flex;gap:5px;justify-content:center;margin:10px 0 6px;}
+.od{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.15);}
+.od.active{width:18px;background:#7C6FF7;}
+
+/* S03 Auth */
+#s-auth{background:#0A0A14;}
+.auth-logo{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 22px;}
+.auth-logo-icon{width:30px;height:30px;background:#1A1A2E;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.divider-row{display:flex;align-items:center;gap:8px;margin:12px 0;}
+.divider-row div:not(:nth-child(2)){flex:1;height:.5px;background:rgba(255,255,255,.1);}
+.divider-row span{font-size:10px;color:rgba(255,255,255,.3);}
+.google-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.6);cursor:pointer;}
+.auth-switch{text-align:center;font-size:10px;color:rgba(255,255,255,.3);margin-top:14px;}
+.auth-switch span{color:#7C6FF7;cursor:pointer;}
+
+/* S06 Home */
+.home-topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 10px;}
+.avatar-sm{width:32px;height:32px;border-radius:50%;background:#7C6FF7;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;color:#fff;}
+.streak-card{background:rgba(255,255,255,.04);border:1px solid rgba(124,111,247,.15);border-radius:11px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+
+/* S07 Upload */
+.upload-zone{border:1.5px dashed rgba(124,111,247,.4);border-radius:13px;background:rgba(124,111,247,.04);padding:28px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:12px;}
+
+/* S09 Material Detail */
+.tab-bar{display:flex;border-bottom:1px solid rgba(255,255,255,.07);margin:0 18px;}
+.tab{padding:8px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.3);cursor:pointer;}
+.tab.active{color:#7C6FF7;border-bottom:2px solid #7C6FF7;}
+
+/* S12 Quiz Setup */
+.toggle-row{background:rgba(255,255,255,.04);border-radius:10px;padding:3px;display:flex;gap:2px;margin-bottom:12px;}
+.toggle-opt{flex:1;padding:8px;text-align:center;border-radius:8px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.3);}
+.toggle-opt.active{background:#7C6FF7;color:#fff;}
+
+/* S14 Quiz Active */
+.quiz-opt{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:9px;cursor:pointer;}
+.quiz-opt.correct{border-color:#10B981;background:rgba(16,185,129,.1);}
+.quiz-opt.wrong{border-color:#EF4444;background:rgba(239,68,68,.06);}
+.opt-letter{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.45);flex-shrink:0;}
+.quiz-opt.correct .opt-letter{background:rgba(16,185,129,.2);color:#10B981;}
+.quiz-opt.wrong .opt-letter{background:rgba(239,68,68,.15);color:#EF4444;}
+
+/* S15 Results */
+.score-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 18px 8px;}
+
+/* S16 Library */
+.search-bar{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:9px 13px;display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.search-bar span{font-size:11px;color:rgba(255,255,255,.25);}
+.chips-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.filter-chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:4px 9px;font-size:9px;color:rgba(255,255,255,.4);cursor:pointer;}
+.filter-chip.active{background:#7C6FF7;border-color:#7C6FF7;color:#fff;}
+
+/* S18 Leaderboard podium */
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:10px;padding:14px 18px 10px;}
+.podium-place{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.podium-ava{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;color:#fff;}
+.podium-block{width:52px;border-radius:5px 5px 0 0;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;}
+
+/* S22 Paywall */
+.plan-card{border-radius:11px;padding:13px;margin-bottom:8px;}
+.plan-card.free{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);}
+.plan-card.pro{background:rgba(124,111,247,.08);border:2px solid #7C6FF7;position:relative;}
+.plan-badge-top{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#7C6FF7;border-radius:5px;padding:2px 10px;font-size:8px;color:#fff;white-space:nowrap;}
+
+/* Web screens */
+.web-screen{display:none;width:100%;height:100%;}
+.web-screen.active{display:flex;}
+.web-sidebar-inner{width:200px;background:#0A0A14;border-right:1px solid rgba(255,255,255,.06);flex-shrink:0;padding:16px 10px;display:flex;flex-direction:column;gap:2px;}
+.ws-logo{display:flex;align-items:center;gap:7px;margin-bottom:16px;padding:0 4px;}
+.ws-nav{padding:7px 9px;border-radius:7px;font-size:11px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;cursor:pointer;}
+.ws-nav.active{background:rgba(124,111,247,.15);color:#A78BFA;}
+.ws-nav:not(.active){color:rgba(255,255,255,.3);}
+.web-main-content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.web-topbar{height:48px;background:#111120;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;}
+.web-content-area{flex:1;background:#0A0A14;overflow-y:auto;padding:18px;}
+.web-content-area::-webkit-scrollbar{display:none;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.kpi-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;}
+.kpi-label{font-size:9px;color:rgba(255,255,255,.35);margin-bottom:3px;}
+.kpi-val{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;}
+.kpi-change{font-size:9px;color:#10B981;margin-top:2px;}
+.content-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:10px;}
+.content-panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:13px;}
+.cp-title{font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:#fff;margin-bottom:10px;}
+.doc-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:.5px solid rgba(255,255,255,.05);}
+.doc-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.doc-name{font-size:10px;color:rgba(255,255,255,.65);flex:1;}
+.chart-area{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px;}
+.bar{border-radius:3px 3px 0 0;flex:1;}
+.admin-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;}
+.admin-table{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;overflow:hidden;}
+.admin-th{display:grid;grid-template-columns:2fr 1.6fr .8fr .8fr .8fr;padding:7px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.04);}
+.admin-th div{font-size:8px;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.22);}
+.admin-tr{display:grid;grid-template-columns:2fr 1.6fr .8fr .8fr .8fr;padding:8px 14px;border-bottom:.5px solid rgba(255,255,255,.04);align-items:center;}
+.admin-tr div{font-size:10px;color:rgba(255,255,255,.55);}
+.user-cell{display:flex;align-items:center;gap:7px;}
+.user-ava{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0;}
+.status-pill{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;}
+.active-pill{background:rgba(16,185,129,.12);color:#34D399;}
+.trial-pill{background:rgba(244,162,39,.12);color:#F4A227;}
+.inactive-pill{background:rgba(255,255,255,.06);color:rgba(255,255,255,.3);}
+
+/* Notify overlay */
+.screen-tag{position:absolute;top:32px;left:0;right:0;display:flex;justify-content:center;z-index:200;pointer-events:none;}
+.stag{background:rgba(124,111,247,.9);border-radius:6px;padding:4px 12px;font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#fff;}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.screen.active{animation:fadeIn .2s ease;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-hex">
+      <svg width="18" height="18" viewBox="0 0 36 36" fill="none">
+        <path d="M18 4L30 11v14L18 32 6 25V11z" fill="#7C6FF7" opacity=".3"/>
+        <path d="M18 4L30 11v14L18 32 6 25V11z" stroke="#7C6FF7" stroke-width="2" fill="none"/>
+        <text x="18" y="22" text-anchor="middle" font-family="Syne,sans-serif" font-size="11" font-weight="700" fill="#7C6FF7">SF</text>
+      </svg>
+    </div>
+    <div class="logo-text">Study<span>Forge</span></div>
+  </div>
+
+  <div class="sidebar-section">Onboarding</div>
+  <button class="nav-btn active" onclick="showScreen('s-splash','Splash','S01')">
+    <div class="nb-icon">🌑</div><div class="nb-label">S01 — Splash</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-onboard','Onboarding','S02')">
+    <div class="nb-icon">👋</div><div class="nb-label">S02 — Onboarding</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-auth','Sign In','S03')">
+    <div class="nb-icon">🔐</div><div class="nb-label">S03 — Sign In</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-signup','Sign Up','S04')">
+    <div class="nb-icon">✍️</div><div class="nb-label">S04 — Sign Up</div>
+  </button>
+
+  <div class="sidebar-section">Core App</div>
+  <button class="nav-btn" onclick="showScreen('s-home','Home Dashboard','S06')">
+    <div class="nb-icon">🏠</div><div class="nb-label">S06 — Home</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-upload','Upload Material','S07')">
+    <div class="nb-icon">☁️</div><div class="nb-label">S07 — Upload</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-processing','Processing','S08')">
+    <div class="nb-icon">⚙️</div><div class="nb-label">S08 — Processing</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-matdetail','Material Detail','S09')">
+    <div class="nb-icon">📄</div><div class="nb-label">S09 — Material Detail</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-chreader','Chapter Reader','S10')">
+    <div class="nb-icon">📖</div><div class="nb-label">S10 — Chapter Reader</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-askai','Ask AI','S11')">
+    <div class="nb-icon">🤖</div><div class="nb-label">S11 — Ask AI</div>
+  </button>
+
+  <div class="sidebar-section">Quiz Flow</div>
+  <button class="nav-btn" onclick="showScreen('s-quizsetup','Quiz Setup','S12')">
+    <div class="nb-icon">⚙️</div><div class="nb-label">S12 — Quiz Setup</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-topicmode','Topic Mode','S13')">
+    <div class="nb-icon">💡</div><div class="nb-label">S13 — Topic Mode</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-quizactive','Quiz Active','S14')">
+    <div class="nb-icon">🎯</div><div class="nb-label">S14 — Quiz Active</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-results','Quiz Results','S15')">
+    <div class="nb-icon">🏆</div><div class="nb-label">S15 — Quiz Results</div>
+  </button>
+
+  <div class="sidebar-section">Discovery & Social</div>
+  <button class="nav-btn" onclick="showScreen('s-library','Library','S16')">
+    <div class="nb-icon">📚</div><div class="nb-label">S16 — Library</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-explore','Explore','S17')">
+    <div class="nb-icon">🔍</div><div class="nb-label">S17 — Explore</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-leaderboard','Leaderboard','S18')">
+    <div class="nb-icon">🥇</div><div class="nb-label">S18 — Leaderboard</div>
+  </button>
+
+  <div class="sidebar-section">Profile & Account</div>
+  <button class="nav-btn" onclick="showScreen('s-profile','Profile','S19')">
+    <div class="nb-icon">👤</div><div class="nb-label">S19 — Profile</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-notifs','Notifications','S20')">
+    <div class="nb-icon">🔔</div><div class="nb-label">S20 — Notifications</div><div class="nb-badge">2</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-settings','Settings','S21')">
+    <div class="nb-icon">⚙️</div><div class="nb-label">S21 — Settings</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-paywall','Plans / Paywall','S22')">
+    <div class="nb-icon">💳</div><div class="nb-label">S22 — Paywall</div>
+  </button>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">Web Screens</div>
+  <button class="nav-btn" onclick="showWeb('w-dashboard','Web Dashboard','W01')">
+    <div class="nb-icon">🌐</div><div class="nb-label">W01 — Dashboard</div><div class="nb-tag">Web</div>
+  </button>
+  <button class="nav-btn" onclick="showWeb('w-admin','Admin Panel','W02')">
+    <div class="nb-icon">🛡️</div><div class="nb-label">W02 — Admin</div><div class="nb-tag">Web</div>
+  </button>
+
+  <div style="height:20px;"></div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">S01 — Splash Screen</div>
+      <div class="topbar-subtitle" id="topbar-sub">Onboarding flow · App launch</div>
+    </div>
+    <div class="topbar-right">
+      <div class="tb-pill active" id="mode-mobile" onclick="setMode('mobile')">📱 Mobile</div>
+      <div class="tb-pill" id="mode-web" onclick="setMode('web')">🌐 Web</div>
+    </div>
+  </div>
+
+  <!-- MOBILE viewport -->
+  <div class="phone-viewport" id="mobile-viewport">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+
+        <!-- S01 Splash -->
+        <div class="screen active" id="s-splash" style="flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#0A0A14,#0D0D18 50%,#120A1F);gap:14px;">
+          <div class="splash-hex">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <path d="M18 4L30 11v14L18 32 6 25V11z" fill="#7C6FF7" opacity=".3"/>
+              <path d="M18 4L30 11v14L18 32 6 25V11z" stroke="#7C6FF7" stroke-width="1.5" fill="none"/>
+              <text x="18" y="23" text-anchor="middle" font-family="Syne,sans-serif" font-size="13" font-weight="700" fill="#7C6FF7">SF</text>
+            </svg>
+          </div>
+          <div class="splash-wm">Study<span>Forge</span></div>
+          <div class="splash-tag">AI Learning Engine</div>
+          <div class="splash-loader"><div class="splash-loader-fill"></div></div>
+        </div>
+
+        <!-- S02 Onboarding -->
+        <div class="screen" id="s-onboard" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div class="onboard-skip" onclick="showScreen('s-auth','Sign In','S03')">Skip</div>
+          <div class="onboard-illo">
+            <svg width="100" height="90" viewBox="0 0 100 90" fill="none">
+              <rect x="10" y="20" width="80" height="50" rx="8" fill="rgba(124,111,247,.12)" stroke="#7C6FF7" stroke-width="1"/>
+              <rect x="20" y="30" width="40" height="5" rx="2.5" fill="#7C6FF7" opacity=".7"/>
+              <rect x="20" y="40" width="28" height="4" rx="2" fill="rgba(255,255,255,.15)"/>
+              <rect x="20" y="49" width="34" height="4" rx="2" fill="rgba(255,255,255,.15)"/>
+              <circle cx="74" cy="36" r="11" fill="#E85D2F" opacity=".8"/>
+              <text x="74" y="40" text-anchor="middle" font-family="Syne,sans-serif" font-size="9" font-weight="700" fill="white">AI</text>
+            </svg>
+            <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;padding:0 20px;">Upload any material — PDF, video, voice, URL</div>
+          </div>
+          <div style="padding:0 22px;">
+            <div class="onboard-dots"><div class="od active"></div><div class="od"></div><div class="od"></div></div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:#fff;line-height:1.25;margin-top:4px;">Upload. Analyze.<br>Master any topic.</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px;line-height:1.5;">StudyForge breaks your material into chapters, summaries and adaptive quizzes using AI.</div>
+            <button class="btn-primary" style="margin-top:18px;" onclick="showScreen('s-auth','Sign In','S03')">Get Started →</button>
+          </div>
+          <div style="height:20px;"></div>
+        </div>
+
+        <!-- S03 Sign In -->
+        <div class="screen" id="s-auth" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="flex:1;padding:10px 22px 22px;overflow-y:auto;">
+            <div class="auth-logo" style="margin-top:16px;">
+              <div class="auth-logo-icon"><svg width="16" height="16" viewBox="0 0 36 36" fill="none"><path d="M18 4L30 11v14L18 32 6 25V11z" fill="#7C6FF7" opacity=".4"/><path d="M18 4L30 11v14L18 32 6 25V11z" stroke="#7C6FF7" stroke-width="2" fill="none"/></svg></div>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#fff;">Study<span style="color:#7C6FF7;">Forge</span></div>
+            </div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:#fff;margin-bottom:4px;">Welcome back</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:20px;">Sign in to continue your journey</div>
+            <div class="field">📧 &nbsp;hello@example.com</div>
+            <div class="field focused">🔒 &nbsp;••••••••••</div>
+            <div style="text-align:right;font-size:10px;color:#7C6FF7;margin-bottom:14px;cursor:pointer;">Forgot password?</div>
+            <button class="btn-primary" onclick="showScreen('s-home','Home Dashboard','S06')">Sign In</button>
+            <div class="divider-row"><div></div><span>or continue with</span><div></div></div>
+            <div class="google-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Continue with Google
+            </div>
+            <div class="auth-switch">Don't have an account? <span onclick="showScreen('s-signup','Sign Up','S04')">Sign Up</span></div>
+          </div>
+        </div>
+
+        <!-- S04 Sign Up -->
+        <div class="screen" id="s-signup" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="flex:1;padding:10px 22px 22px;overflow-y:auto;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:#fff;margin:16px 0 4px;">Create account</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:20px;">Start your learning journey today</div>
+            <div class="field">👤 &nbsp;Full name</div>
+            <div class="field">📧 &nbsp;Email address</div>
+            <div class="field">🔒 &nbsp;Password</div>
+            <div class="field">🔒 &nbsp;Confirm password</div>
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;margin-top:4px;">
+              <div style="width:14px;height:14px;border-radius:3px;background:#7C6FF7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:9px;">✓</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.35);line-height:1.4;">I agree to the <span style="color:#7C6FF7;">Terms of Service</span> and <span style="color:#7C6FF7;">Privacy Policy</span></div>
+            </div>
+            <button class="btn-primary" onclick="showScreen('s-home','Home Dashboard','S06')">Create Account</button>
+            <div class="divider-row"><div></div><span>or</span><div></div></div>
+            <div class="google-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Continue with Google
+            </div>
+            <div class="auth-switch">Already have an account? <span onclick="showScreen('s-auth','Sign In','S03')">Sign In</span></div>
+          </div>
+        </div>
+
+        <!-- S06 Home -->
+        <div class="screen" id="s-home" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div class="home-topbar">
+            <div>
+              <div style="font-size:10px;color:rgba(255,255,255,.35);">Good morning,</div>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;">Harpal 👋</div>
+            </div>
+            <div class="avatar-sm" onclick="showScreen('s-profile','Profile','S19')">HJ</div>
+          </div>
+          <div class="scroll-body">
+            <div class="streak-card">
+              <div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:#fff;">14</div><div style="font-size:9px;color:rgba(255,255,255,.35);">Day streak</div></div>
+              <div style="text-align:right;"><div style="font-size:24px;">🔥</div><div style="font-size:8px;color:#F4A227;margin-top:2px;">Keep it up!</div></div>
+            </div>
+            <div class="section-label">Quick upload</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;">
+              <div style="background:rgba(124,111,247,.12);border:1px solid rgba(124,111,247,.2);border-radius:8px;padding:7px 10px;font-size:9px;color:#A78BFA;cursor:pointer;" onclick="showScreen('s-upload','Upload Material','S07')">📄 PDF</div>
+              <div style="background:rgba(244,162,39,.1);border:1px solid rgba(244,162,39,.2);border-radius:8px;padding:7px 10px;font-size:9px;color:#F4A227;cursor:pointer;" onclick="showScreen('s-upload','Upload Material','S07')">🎥 Video</div>
+              <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.15);border-radius:8px;padding:7px 10px;font-size:9px;color:#34D399;cursor:pointer;" onclick="showScreen('s-upload','Upload Material','S07')">🎤 Voice</div>
+              <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);border-radius:8px;padding:7px 10px;font-size:9px;color:#60A5FA;cursor:pointer;" onclick="showScreen('s-upload','Upload Material','S07')">🔗 URL</div>
+            </div>
+            <div class="section-label">Continue learning</div>
+            <div class="card" style="cursor:pointer;" onclick="showScreen('s-matdetail','Material Detail','S09')">
+              <div style="display:flex;gap:9px;align-items:center;">
+                <div style="width:36px;height:36px;border-radius:9px;background:rgba(124,111,247,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📄</div>
+                <div style="flex:1;min-width:0;">
+                  <div class="card-title">React Native Architecture</div>
+                  <div class="card-sub">12 chapters · 68% done</div>
+                  <div class="prog"><div class="prog-fill" style="width:68%;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="cursor:pointer;margin-top:8px;" onclick="showScreen('s-matdetail','Material Detail','S09')">
+              <div style="display:flex;gap:9px;align-items:center;">
+                <div style="width:36px;height:36px;border-radius:9px;background:rgba(244,162,39,.1);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🧠</div>
+                <div style="flex:1;min-width:0;">
+                  <div class="card-title">System Design Basics</div>
+                  <div class="card-sub">8 chapters · 20% done</div>
+                  <div class="prog"><div class="prog-fill" style="width:20%;background:#F4A227;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="section-label">Upcoming quiz</div>
+            <div class="card" style="background:rgba(124,111,247,.06);border-color:rgba(124,111,247,.2);cursor:pointer;" onclick="showScreen('s-quizactive','Quiz Active','S14')">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div><div class="card-title">JS Closures · Advanced</div><div class="card-sub">10 questions · Scheduled today</div></div>
+                <div style="background:#7C6FF7;border-radius:7px;padding:5px 9px;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;">Start</div>
+              </div>
+            </div>
+          </div>
+          <div class="bnav">
+            <button class="bni a" onclick="showScreen('s-home','Home Dashboard','S06')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg><span>Home</span></button>
+            <button class="bni" onclick="showScreen('s-library','Library','S16')"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="8" width="8" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="13" width="10" height="2" rx="1" stroke="currentColor" stroke-width="1.5"/></svg><span>Library</span></button>
+            <button class="bni center" onclick="showScreen('s-upload','Upload Material','S07')"><div class="plus-btn"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></button>
+            <button class="bni" onclick="showScreen('s-quizsetup','Quiz Setup','S12')"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 5h6M4 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Quiz</span></button>
+            <button class="bni" onclick="showScreen('s-profile','Profile','S19')"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Me</span></button>
+          </div>
+        </div>
+
+        <!-- S07 Upload -->
+        <div class="screen" id="s-upload" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div class="screen-header"><div class="screen-title">Upload Material</div><div class="screen-sub">AI will analyze & generate chapters + quizzes</div></div>
+          <div style="padding:0 18px;flex:1;overflow-y:auto;padding-bottom:20px;">
+            <div class="toggle-row" style="margin-bottom:14px;">
+              <div class="toggle-opt active">From material</div>
+              <div class="toggle-opt" onclick="showScreen('s-topicmode','Topic Mode','S13')">Topic mode</div>
+            </div>
+            <div class="upload-zone" onclick="showScreen('s-processing','Processing','S08')">
+              <div style="font-size:32px;">☁️</div>
+              <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:#fff;">Drop files here</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.35);">or tap to browse</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px;">
+                <div style="background:rgba(255,255,255,.06);border-radius:4px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,.4);">PDF</div>
+                <div style="background:rgba(255,255,255,.06);border-radius:4px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,.4);">PPTX</div>
+                <div style="background:rgba(255,255,255,.06);border-radius:4px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,.4);">DOC</div>
+                <div style="background:rgba(255,255,255,.06);border-radius:4px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,.4);">MP4</div>
+                <div style="background:rgba(255,255,255,.06);border-radius:4px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,.4);">MP3</div>
+                <div style="background:rgba(255,255,255,.06);border-radius:4px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,.4);">URL</div>
+                <div style="background:rgba(255,255,255,.06);border-radius:4px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,.4);">IMG</div>
+              </div>
+            </div>
+            <div class="section-label">Or record voice</div>
+            <div class="card" style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:rgba(232,93,47,.15);border:1px solid rgba(232,93,47,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🎤</div>
+              <div><div class="card-title">Record audio note</div><div class="card-sub">Tap to start recording</div></div>
+            </div>
+            <div class="section-label">Recent uploads</div>
+            <div class="card" style="display:flex;align-items:center;gap:9px;cursor:pointer;" onclick="showScreen('s-matdetail','Material Detail','S09')">
+              <div style="font-size:20px;">📄</div>
+              <div style="flex:1;"><div class="card-title" style="font-size:11px;">React Native Architecture.pdf</div><div class="card-sub">Uploaded 2d ago · 12 chapters</div></div>
+              <div class="chip chip-g">Done</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- S08 Processing -->
+        <div class="screen" id="s-processing" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+            <div style="width:64px;height:64px;border-radius:16px;background:rgba(124,111,247,.12);border:1px solid rgba(124,111,247,.25);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:18px;">📄</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;text-align:center;">Analyzing material</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:6px;text-align:center;">React Native Architecture.pdf</div>
+            <div style="width:100%;margin:24px 0;">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:18px;height:18px;border-radius:50%;background:rgba(16,185,129,.2);display:flex;align-items:center;justify-content:center;font-size:9px;color:#34D399;flex-shrink:0;">✓</div>
+                  <div style="font-size:11px;color:#34D399;">Extracting text</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:18px;height:18px;border-radius:50%;background:rgba(16,185,129,.2);display:flex;align-items:center;justify-content:center;font-size:9px;color:#34D399;flex-shrink:0;">✓</div>
+                  <div style="font-size:11px;color:#34D399;">Chunking content</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:18px;height:18px;border-radius:50%;background:rgba(124,111,247,.15);border:1.5px solid #7C6FF7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <div style="width:8px;height:8px;border-radius:50%;border:1.5px solid #7C6FF7;border-top-color:transparent;"></div>
+                  </div>
+                  <div style="font-size:11px;color:#A78BFA;">Generating chapters...</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;opacity:.4;">
+                  <div style="width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.15);flex-shrink:0;"></div>
+                  <div style="font-size:11px;color:rgba(255,255,255,.5);">Building quizzes</div>
+                </div>
+              </div>
+            </div>
+            <div style="width:100%;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:8px;">
+              <div style="width:62%;height:100%;background:#7C6FF7;border-radius:2px;"></div>
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,.3);">Estimated time: ~45 seconds</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:20px;">
+              <div style="width:28px;height:16px;background:#7C6FF7;border-radius:8px;position:relative;"><div style="width:12px;height:12px;border-radius:50%;background:#fff;position:absolute;right:2px;top:2px;"></div></div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4);">Notify me when done</div>
+            </div>
+            <button class="btn-ghost" style="margin-top:20px;width:140px;padding:9px;" onclick="showScreen('s-home','Home Dashboard','S06')">Go to Home</button>
+          </div>
+        </div>
+
+        <!-- S09 Material Detail -->
+        <div class="screen" id="s-matdetail" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="padding:6px 18px 0;display:flex;align-items:center;gap:9px;">
+            <div style="width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="showScreen('s-home','Home Dashboard','S06')">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">React Native Architecture</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.3);">PDF · 42 pages · 2 days ago</div>
+            </div>
+          </div>
+          <div style="padding:8px 18px;display:flex;gap:5px;flex-wrap:wrap;">
+            <div class="chip chip-v">12 chapters</div>
+            <div class="chip chip-a">68% done</div>
+            <div class="chip chip-g">36 quizzes</div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active">Chapters</div>
+            <div class="tab">Summary</div>
+            <div class="tab">Quiz</div>
+            <div class="tab">Ask AI</div>
+          </div>
+          <div class="scroll-body" style="padding-top:10px;">
+            <div class="card" style="cursor:pointer;border-left:2px solid #34D399;border-radius:0 11px 11px 0;" onclick="showScreen('s-chreader','Chapter Reader','S10')">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><div class="card-title" style="font-size:11px;">01 · JS & Native Threads</div><div style="font-size:11px;color:#34D399;">✓</div></div>
+              <div class="card-sub">How RN bridges JS and native execution contexts.</div>
+              <div class="prog"><div class="prog-fill" style="width:100%;background:#34D399;"></div></div>
+            </div>
+            <div class="card" style="cursor:pointer;border-left:2px solid #7C6FF7;border-radius:0 11px 11px 0;margin-top:8px;" onclick="showScreen('s-chreader','Chapter Reader','S10')">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><div class="card-title" style="font-size:11px;">02 · JSI & New Architecture</div><div style="font-size:9px;color:rgba(255,255,255,.25);">In progress</div></div>
+              <div class="card-sub">JSI replaces the bridge with sync C++ bindings.</div>
+              <div class="prog"><div class="prog-fill" style="width:60%;"></div></div>
+            </div>
+            <div class="card" style="margin-top:8px;opacity:.65;cursor:pointer;" onclick="showScreen('s-chreader','Chapter Reader','S10')">
+              <div class="card-title" style="font-size:11px;">03 · TurboModules</div>
+              <div class="card-sub">Lazy-loaded native modules for performance.</div>
+              <div class="prog"><div class="prog-fill" style="width:0%;"></div></div>
+            </div>
+            <div class="card" style="margin-top:8px;opacity:.4;">
+              <div class="card-title" style="font-size:11px;">04 · Fabric Renderer</div>
+              <div class="card-sub">New concurrent UI rendering pipeline.</div>
+            </div>
+            <div class="card" style="margin-top:8px;opacity:.4;">
+              <div class="card-title" style="font-size:11px;">05 · Hermes Engine</div>
+              <div class="card-sub">Optimized JS engine for React Native.</div>
+            </div>
+          </div>
+          <div class="bnav">
+            <button class="bni" onclick="showScreen('s-home','Home Dashboard','S06')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg><span>Home</span></button>
+            <button class="bni a"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="8" width="8" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="13" width="10" height="2" rx="1" stroke="currentColor" stroke-width="1.5"/></svg><span>Library</span></button>
+            <button class="bni center" onclick="showScreen('s-upload','Upload Material','S07')"><div class="plus-btn"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></button>
+            <button class="bni" onclick="showScreen('s-quizsetup','Quiz Setup','S12')"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 5h6M4 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Quiz</span></button>
+            <button class="bni" onclick="showScreen('s-profile','Profile','S19')"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Me</span></button>
+          </div>
+        </div>
+
+        <!-- S10 Chapter Reader -->
+        <div class="screen" id="s-chreader" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="background:#111120;padding:8px 18px 12px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="showScreen('s-matdetail','Material Detail','S09')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div style="flex:1;"><div style="font-size:9px;color:rgba(255,255,255,.3);">Chapter 2 of 12</div><div style="font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;color:#fff;">JSI & New Architecture</div></div>
+              <div style="font-size:16px;cursor:pointer;">🔖</div>
+            </div>
+            <div style="height:3px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:10px;overflow:hidden;"><div style="width:60%;height:100%;background:#7C6FF7;border-radius:2px;"></div></div>
+          </div>
+          <div class="scroll-body" style="padding-top:12px;padding-bottom:80px;">
+            <div style="background:rgba(124,111,247,.07);border:1px solid rgba(124,111,247,.18);border-radius:10px;padding:11px 13px;margin-bottom:12px;">
+              <div style="font-size:9px;color:#A78BFA;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">AI Summary</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.55;">JSI is a C++ layer enabling synchronous, direct communication between JS and native — eliminating the async JSON bridge bottleneck of old React Native.</div>
+            </div>
+            <div style="font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;color:#fff;margin-bottom:10px;">Key concepts</div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px;">
+              <div style="display:flex;gap:9px;align-items:flex-start;"><div style="width:5px;height:5px;border-radius:50%;background:#7C6FF7;margin-top:5px;flex-shrink:0;"></div><div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.45;">JSI exposes a C++ HostObject that JS can call synchronously</div></div>
+              <div style="display:flex;gap:9px;align-items:flex-start;"><div style="width:5px;height:5px;border-radius:50%;background:#7C6FF7;margin-top:5px;flex-shrink:0;"></div><div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.45;">No more JSON serialization overhead on every bridge call</div></div>
+              <div style="display:flex;gap:9px;align-items:flex-start;"><div style="width:5px;height:5px;border-radius:50%;background:#E85D2F;margin-top:5px;flex-shrink:0;"></div><div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.45;">Enables TurboModules and Fabric without the old bridge</div></div>
+            </div>
+            <div style="background:rgba(244,162,39,.07);border:1px solid rgba(244,162,39,.18);border-radius:10px;padding:10px 13px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showScreen('s-quizactive','Quiz Active','S14')">
+              <div style="font-size:11px;color:#F4A227;">3 quiz questions for this chapter</div>
+              <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:#F4A227;">Start →</div>
+            </div>
+          </div>
+          <div style="padding:0 18px 16px;">
+            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 13px;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="showScreen('s-askai','Ask AI','S11')">
+              <div style="flex:1;font-size:11px;color:rgba(255,255,255,.3);">Ask anything about this chapter...</div>
+              <div style="width:26px;height:26px;background:#7C6FF7;border-radius:7px;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 6 2 2v3l6 1-6 1v3z" fill="white"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- S11 Ask AI -->
+        <div class="screen" id="s-askai" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="padding:6px 18px 10px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="showScreen('s-chreader','Chapter Reader','S10')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div style="flex:1;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:#fff;">Ask AI</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.25);">RN Architecture.pdf</div>
+            </div>
+          </div>
+          <div style="flex:1;padding:12px 18px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;">
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <div style="width:24px;height:24px;border-radius:7px;background:rgba(124,111,247,.15);border:1px solid rgba(124,111,247,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 36 36" fill="none"><path d="M18 4L30 11v14L18 32 6 25V11z" fill="#7C6FF7" opacity=".5"/><path d="M18 4L30 11v14L18 32 6 25V11z" stroke="#7C6FF7" stroke-width="2" fill="none"/></svg></div>
+              <div style="background:rgba(255,255,255,.05);border-radius:0 10px 10px 10px;padding:10px 12px;flex:1;"><div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.5;">Hi! I've analyzed your React Native Architecture PDF. Ask me anything about the content — chapters, concepts, or comparisons.</div></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;">
+              <div style="background:#7C6FF7;border-radius:10px 0 10px 10px;padding:10px 12px;max-width:80%;"><div style="font-size:11px;color:#fff;line-height:1.45;">What's the main difference between JSI and the old Bridge?</div></div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <div style="width:24px;height:24px;border-radius:7px;background:rgba(124,111,247,.15);border:1px solid rgba(124,111,247,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 36 36" fill="none"><path d="M18 4L30 11v14L18 32 6 25V11z" fill="#7C6FF7" opacity=".5"/><path d="M18 4L30 11v14L18 32 6 25V11z" stroke="#7C6FF7" stroke-width="2" fill="none"/></svg></div>
+              <div style="background:rgba(255,255,255,.05);border-radius:0 10px 10px 10px;padding:10px 12px;flex:1;">
+                <div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.5;">The old Bridge serialized every call to JSON async. JSI uses C++ for <span style="color:#A78BFA;">synchronous direct calls</span> — no serialization overhead.</div>
+                <div style="margin-top:6px;font-size:9px;color:rgba(124,111,247,.7);">📄 Source: Ch.2 · p.14</div>
+              </div>
+            </div>
+            <div style="font-size:9px;color:rgba(255,255,255,.25);">Suggested:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;">
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:5px 9px;font-size:9px;color:rgba(255,255,255,.45);cursor:pointer;">Explain TurboModules</div>
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:5px 9px;font-size:9px;color:rgba(255,255,255,.45);cursor:pointer;">What is Fabric?</div>
+            </div>
+          </div>
+          <div style="padding:8px 18px 16px;">
+            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 13px;display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;font-size:11px;color:rgba(255,255,255,.25);">Ask about your material...</div>
+              <div style="width:26px;height:26px;background:#7C6FF7;border-radius:7px;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 6 2 2v3l6 1-6 1v3z" fill="white"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- S12 Quiz Setup -->
+        <div class="screen" id="s-quizsetup" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div class="screen-header"><div class="screen-title">New Quiz</div></div>
+          <div style="padding:0 18px;flex:1;overflow-y:auto;padding-bottom:20px;">
+            <div class="toggle-row">
+              <div class="toggle-opt active">From material</div>
+              <div class="toggle-opt" onclick="showScreen('s-topicmode','Topic Mode','S13')">Topic mode</div>
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px;">Select material</div>
+            <div style="background:rgba(124,111,247,.1);border:1px solid #7C6FF7;border-radius:9px;padding:10px 13px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <div style="font-size:11px;color:#A78BFA;">React Native Architecture.pdf</div>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px;">Chapter scope</div>
+            <div style="display:flex;gap:5px;margin-bottom:12px;">
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 10px;font-size:10px;color:rgba(255,255,255,.4);">All chapters</div>
+              <div style="background:rgba(124,111,247,.15);border:1px solid #7C6FF7;border-radius:6px;padding:6px 10px;font-size:10px;color:#A78BFA;">Ch. 1–3</div>
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 10px;font-size:10px;color:rgba(255,255,255,.4);">Custom</div>
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px;">Difficulty</div>
+            <div style="display:flex;gap:5px;margin-bottom:12px;">
+              <div style="flex:1;background:rgba(255,255,255,.04);border-radius:7px;padding:8px;text-align:center;font-size:10px;color:rgba(255,255,255,.3);">Basic</div>
+              <div style="flex:1;background:rgba(255,255,255,.04);border-radius:7px;padding:8px;text-align:center;font-size:10px;color:rgba(255,255,255,.3);">Medium</div>
+              <div style="flex:1;background:#7C6FF7;border-radius:7px;padding:8px;text-align:center;font-size:10px;color:#fff;">Advanced</div>
+              <div style="flex:1;background:rgba(232,93,47,.1);border:1px solid rgba(232,93,47,.3);border-radius:7px;padding:8px;text-align:center;font-size:10px;color:#E85D2F;">Pro</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><div style="font-size:10px;color:rgba(255,255,255,.35);">Questions</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#7C6FF7;">10</div></div>
+            <div style="height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:12px;"><div style="width:50%;height:100%;background:#7C6FF7;border-radius:2px;"></div></div>
+            <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px;">Question types</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:18px;">
+              <div style="background:rgba(124,111,247,.15);border:1px solid rgba(124,111,247,.4);border-radius:5px;padding:5px 9px;font-size:10px;color:#A78BFA;">MCQ</div>
+              <div style="background:rgba(124,111,247,.15);border:1px solid rgba(124,111,247,.4);border-radius:5px;padding:5px 9px;font-size:10px;color:#A78BFA;">True/False</div>
+              <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:5px 9px;font-size:10px;color:rgba(255,255,255,.3);">Fill-in</div>
+            </div>
+            <button class="btn-primary" onclick="showScreen('s-quizactive','Quiz Active','S14')">Generate Quiz →</button>
+          </div>
+        </div>
+
+        <!-- S13 Topic Mode -->
+        <div class="screen" id="s-topicmode" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div class="screen-header"><div class="screen-title">Topic Mode</div><div class="screen-sub">No material? Just type a topic.</div></div>
+          <div style="padding:0 18px;flex:1;overflow-y:auto;padding-bottom:20px;">
+            <div class="toggle-row">
+              <div class="toggle-opt" onclick="showScreen('s-quizsetup','Quiz Setup','S12')">From material</div>
+              <div class="toggle-opt active">Topic mode</div>
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px;">Topic name</div>
+            <div style="background:rgba(124,111,247,.08);border:1.5px solid #7C6FF7;border-radius:9px;padding:11px 13px;margin-bottom:8px;"><div style="font-size:11px;color:#A78BFA;">JavaScript Closures and Scope</div></div>
+            <div style="font-size:9px;color:rgba(255,255,255,.2);margin-bottom:5px;">Popular topics</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:4px 8px;font-size:9px;color:rgba(255,255,255,.4);">React Hooks</div>
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:4px 8px;font-size:9px;color:rgba(255,255,255,.4);">Async/Await</div>
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:4px 8px;font-size:9px;color:rgba(255,255,255,.4);">SQL Joins</div>
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:4px 8px;font-size:9px;color:rgba(255,255,255,.4);">CSS Grid</div>
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px;">Output depth</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+              <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:10px 13px;display:flex;align-items:center;gap:9px;"><div style="width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;"></div><div><div style="font-size:11px;color:rgba(255,255,255,.55);">Summary + Quiz</div><div style="font-size:9px;color:rgba(255,255,255,.25);">Short overview with questions</div></div></div>
+              <div style="background:rgba(124,111,247,.08);border:1.5px solid rgba(124,111,247,.4);border-radius:9px;padding:10px 13px;display:flex;align-items:center;gap:9px;"><div style="width:16px;height:16px;border-radius:50%;background:#7C6FF7;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:6px;height:6px;border-radius:50%;background:#fff;"></div></div><div><div style="font-size:11px;color:#A78BFA;">Chapters + Quiz</div><div style="font-size:9px;color:rgba(255,255,255,.3);">Full breakdown per chapter</div></div></div>
+            </div>
+            <div style="display:flex;gap:7px;margin-bottom:16px;">
+              <div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:8px;color:rgba(255,255,255,.3);">Questions</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;margin-top:2px;">10</div></div>
+              <div style="flex:1;background:rgba(124,111,247,.08);border:1px solid rgba(124,111,247,.2);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:8px;color:rgba(255,255,255,.3);">Level</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#A78BFA;margin-top:2px;">Advanced</div></div>
+              <div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:8px;color:rgba(255,255,255,.3);">Lang</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;margin-top:2px;">EN</div></div>
+            </div>
+            <button class="btn-primary" onclick="showScreen('s-quizactive','Quiz Active','S14')">Generate → (uses AI cache)</button>
+            <div style="text-align:center;font-size:9px;color:rgba(255,255,255,.2);margin-top:8px;">Cached results load instantly if topic exists</div>
+          </div>
+        </div>
+
+        <!-- S14 Quiz Active -->
+        <div class="screen" id="s-quizactive" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="padding:8px 18px;flex-shrink:0;">
+            <div style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:5px;">React Native Architecture</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <div class="chip chip-v">Advanced</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.35);">4 / 10</div>
+            </div>
+            <div style="height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;"><div style="width:40%;height:100%;background:#7C6FF7;border-radius:2px;"></div></div>
+          </div>
+          <div style="padding:10px 18px;flex:1;overflow-y:auto;">
+            <div style="font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;color:#fff;line-height:1.4;margin-bottom:18px;">Which bridge in React Native is responsible for async JS–native communication, now replaced by JSI?</div>
+            <div class="quiz-opt correct">
+              <div class="opt-letter">A</div>
+              <div style="font-size:11px;color:#34D399;">The JS Bridge (replaced by JSI)</div>
+            </div>
+            <div class="quiz-opt wrong">
+              <div class="opt-letter" style="background:rgba(239,68,68,.15);color:#EF4444;">B</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4);">Native Modules layer</div>
+            </div>
+            <div class="quiz-opt">
+              <div class="opt-letter">C</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.6);">Hermes engine interface</div>
+            </div>
+            <div class="quiz-opt">
+              <div class="opt-letter">D</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.6);">Metro bundler IPC</div>
+            </div>
+            <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:11px 13px;margin-top:12px;">
+              <div style="font-size:10px;color:#34D399;margin-bottom:3px;">✅ Correct!</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.45;">JSI (JavaScript Interface) replaces the async bridge with synchronous C++ bindings, enabling TurboModules and Fabric.</div>
+            </div>
+          </div>
+          <div style="padding:12px 18px;">
+            <button class="btn-primary" onclick="showScreen('s-results','Quiz Results','S15')">Next Question →</button>
+          </div>
+        </div>
+
+        <!-- S15 Quiz Results -->
+        <div class="screen" id="s-results" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="flex:1;overflow-y:auto;padding:16px 18px 20px;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:16px;">
+              <div style="position:relative;width:100px;height:100px;">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(124,111,247,.1)" stroke-width="7"/>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#7C6FF7" stroke-width="7" stroke-dasharray="220" stroke-dashoffset="55" stroke-linecap="round" transform="rotate(-90 50 50)"/>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff;">75%</div>
+                  <div style="font-size:9px;color:rgba(255,255,255,.3);">accuracy</div>
+                </div>
+              </div>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;">Quiz complete!</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4);text-align:center;">React Native Architecture · Advanced · 10 questions</div>
+            </div>
+            <div style="background:rgba(124,111,247,.1);border:1px solid rgba(124,111,247,.25);border-radius:11px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+              <div style="font-size:22px;">⚡</div>
+              <div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#A78BFA;">+120 XP</div><div style="font-size:9px;color:rgba(255,255,255,.35);">Streak bonus included</div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:14px;">
+              <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.18);border-radius:9px;padding:10px;text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#34D399;">7</div><div style="font-size:9px;color:rgba(255,255,255,.3);">Correct</div></div>
+              <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:9px;padding:10px;text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#F87171;">3</div><div style="font-size:9px;color:rgba(255,255,255,.3);">Wrong</div></div>
+              <div class="card" style="padding:10px;text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;">1:42</div><div style="font-size:9px;color:rgba(255,255,255,.3);">Time</div></div>
+            </div>
+            <div class="card" style="margin-bottom:14px;">
+              <div style="font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;color:#fff;margin-bottom:8px;">Review these topics</div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:4px;height:4px;border-radius:50%;background:#EF4444;flex-shrink:0;"></div><div style="font-size:11px;color:rgba(255,255,255,.5);">TurboModules lifecycle</div></div>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:4px;height:4px;border-radius:50%;background:#EF4444;flex-shrink:0;"></div><div style="font-size:11px;color:rgba(255,255,255,.5);">Fabric rendering passes</div></div>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-ghost" onclick="showScreen('s-quizactive','Quiz Active','S14')">Review</button>
+              <button class="btn-primary" onclick="showScreen('s-quizsetup','Quiz Setup','S12')">Retry</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- S16 Library -->
+        <div class="screen" id="s-library" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="padding:6px 18px 0;display:flex;align-items:center;justify-content:space-between;">
+            <div class="screen-title">My Library</div>
+            <div style="background:#7C6FF7;border-radius:7px;padding:5px 10px;font-size:10px;font-weight:600;color:#fff;cursor:pointer;" onclick="showScreen('s-upload','Upload Material','S07')">+ Add</div>
+          </div>
+          <div style="padding:10px 18px 0;">
+            <div class="search-bar"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/><path d="M8.5 8.5l2 2" stroke="rgba(255,255,255,.3)" stroke-width="1.2" stroke-linecap="round"/></svg><span>Search your materials...</span></div>
+            <div class="chips-row">
+              <div class="filter-chip active">All</div>
+              <div class="filter-chip">PDF</div>
+              <div class="filter-chip">Video</div>
+              <div class="filter-chip">Audio</div>
+              <div class="filter-chip">URL</div>
+            </div>
+          </div>
+          <div class="scroll-body" style="padding-top:4px;">
+            <div class="card" style="cursor:pointer;display:flex;align-items:center;gap:10px;" onclick="showScreen('s-matdetail','Material Detail','S09')">
+              <div style="width:38px;height:38px;border-radius:9px;background:rgba(124,111,247,.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📄</div>
+              <div style="flex:1;min-width:0;"><div class="card-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">React Native Architecture</div><div class="card-sub">PDF · 12 chapters · 68%</div><div class="prog"><div class="prog-fill" style="width:68%;"></div></div></div>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 2l4 3-4 3" stroke="rgba(255,255,255,.25)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="card" style="cursor:pointer;display:flex;align-items:center;gap:10px;margin-top:8px;">
+              <div style="width:38px;height:38px;border-radius:9px;background:rgba(244,162,39,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🎬</div>
+              <div style="flex:1;min-width:0;"><div class="card-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">System Design – YouTube</div><div class="card-sub">Video · 8 chapters · 20%</div><div class="prog"><div class="prog-fill" style="width:20%;background:#F4A227;"></div></div></div>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 2l4 3-4 3" stroke="rgba(255,255,255,.25)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="card" style="cursor:pointer;display:flex;align-items:center;gap:10px;margin-top:8px;">
+              <div style="width:38px;height:38px;border-radius:9px;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🎤</div>
+              <div style="flex:1;min-width:0;"><div class="card-title">Lecture – Data Structures</div><div class="card-sub">Audio · 6 chapters · 100%</div><div class="prog"><div class="prog-fill" style="width:100%;background:#34D399;"></div></div></div>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 2l4 3-4 3" stroke="rgba(255,255,255,.25)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:10px;margin-top:8px;opacity:.55;">
+              <div style="width:38px;height:38px;border-radius:9px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🔗</div>
+              <div style="flex:1;min-width:0;"><div class="card-title">MDN – JS Closures</div><div class="card-sub">URL · Processing...</div></div>
+              <div style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(124,111,247,.4);border-top-color:#7C6FF7;"></div>
+            </div>
+          </div>
+          <div class="bnav">
+            <button class="bni" onclick="showScreen('s-home','Home Dashboard','S06')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg><span>Home</span></button>
+            <button class="bni a"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="8" width="8" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="13" width="10" height="2" rx="1" stroke="currentColor" stroke-width="1.5"/></svg><span>Library</span></button>
+            <button class="bni center" onclick="showScreen('s-upload','Upload Material','S07')"><div class="plus-btn"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></button>
+            <button class="bni" onclick="showScreen('s-quizsetup','Quiz Setup','S12')"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 5h6M4 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Quiz</span></button>
+            <button class="bni" onclick="showScreen('s-profile','Profile','S19')"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Me</span></button>
+          </div>
+        </div>
+
+        <!-- S17 Explore -->
+        <div class="screen" id="s-explore" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div class="screen-header"><div class="screen-title">Explore</div><div class="screen-sub">Pre-built topic libraries</div></div>
+          <div style="padding:0 18px 0;">
+            <div class="search-bar" style="margin-bottom:8px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/><path d="M8.5 8.5l2 2" stroke="rgba(255,255,255,.3)" stroke-width="1.2" stroke-linecap="round"/></svg><span>Search topics...</span></div>
+            <div class="chips-row"><div class="filter-chip active">All</div><div class="filter-chip">Dev</div><div class="filter-chip">Science</div><div class="filter-chip">Business</div><div class="filter-chip">Medical</div></div>
+          </div>
+          <div class="scroll-body" style="padding-top:4px;">
+            <div class="section-label" style="margin-top:0;">Trending</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+              <div style="background:rgba(124,111,247,.1);border:1px solid rgba(124,111,247,.2);border-radius:11px;padding:14px;cursor:pointer;"><div style="font-size:20px;margin-bottom:7px;">⚛️</div><div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:#fff;">React Native</div><div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;">24 topics · 180 quizzes</div></div>
+              <div style="background:rgba(232,93,47,.08);border:1px solid rgba(232,93,47,.18);border-radius:11px;padding:14px;cursor:pointer;"><div style="font-size:20px;margin-bottom:7px;">🏗️</div><div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:#fff;">System Design</div><div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;">18 topics · 120 quizzes</div></div>
+              <div style="background:rgba(244,162,39,.07);border:1px solid rgba(244,162,39,.15);border-radius:11px;padding:14px;cursor:pointer;"><div style="font-size:20px;margin-bottom:7px;">🧬</div><div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:#fff;">ML Fundamentals</div><div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;">30 topics · 200 quizzes</div></div>
+              <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.14);border-radius:11px;padding:14px;cursor:pointer;"><div style="font-size:20px;margin-bottom:7px;">💹</div><div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:#fff;">Finance Basics</div><div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;">15 topics · 90 quizzes</div></div>
+            </div>
+            <div class="section-label">New this week</div>
+            <div class="card" style="display:flex;gap:10px;align-items:center;cursor:pointer;"><div style="font-size:22px;">🤖</div><div><div class="card-title">LLM Engineering 101</div><div class="card-sub">12 topics · Added 2 days ago</div></div></div>
+            <div class="card" style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-top:8px;"><div style="font-size:22px;">🐳</div><div><div class="card-title">Docker & Kubernetes</div><div class="card-sub">8 topics · Added 5 days ago</div></div></div>
+          </div>
+          <div class="bnav">
+            <button class="bni" onclick="showScreen('s-home','Home Dashboard','S06')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg><span>Home</span></button>
+            <button class="bni" onclick="showScreen('s-library','Library','S16')"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="8" width="8" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="13" width="10" height="2" rx="1" stroke="currentColor" stroke-width="1.5"/></svg><span>Library</span></button>
+            <button class="bni center a" onclick="showScreen('s-upload','Upload Material','S07')"><div class="plus-btn"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></button>
+            <button class="bni" onclick="showScreen('s-quizsetup','Quiz Setup','S12')"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 5h6M4 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Quiz</span></button>
+            <button class="bni" onclick="showScreen('s-profile','Profile','S19')"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Me</span></button>
+          </div>
+        </div>
+
+        <!-- S18 Leaderboard -->
+        <div class="screen" id="s-leaderboard" style="background:#0A0A14;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="padding:6px 18px;display:flex;align-items:center;justify-content:space-between;">
+            <div class="screen-title">Leaderboard</div>
+            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 9px;font-size:9px;color:rgba(255,255,255,.4);">This week ▾</div>
+          </div>
+          <div style="padding:0 18px;display:flex;gap:5px;margin-bottom:6px;">
+            <div class="filter-chip active">Global</div>
+            <div class="filter-chip">Friends</div>
+            <div class="filter-chip">Topic</div>
+          </div>
+          <div class="podium">
+            <div class="podium-place"><div class="podium-ava" style="width:36px;height:36px;background:rgba(192,192,192,.12);border:1.5px solid #C0C0C0;font-size:11px;color:#C0C0C0;">RA</div><div style="font-size:8px;color:rgba(255,255,255,.35);">Riya</div><div class="podium-block" style="height:44px;background:rgba(192,192,192,.07);border:1px solid rgba(192,192,192,.18);color:#C0C0C0;">2</div></div>
+            <div class="podium-place"><div style="font-size:14px;margin-bottom:2px;">👑</div><div class="podium-ava" style="width:42px;height:42px;background:rgba(255,215,0,.12);border:2px solid #FFD700;font-size:12px;color:#FFD700;">AK</div><div style="font-size:8px;color:rgba(255,255,255,.35);">Arjun</div><div class="podium-block" style="height:56px;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.2);color:#FFD700;">1</div></div>
+            <div class="podium-place"><div class="podium-ava" style="width:34px;height:34px;background:rgba(205,127,50,.1);border:1.5px solid #CD7F32;font-size:10px;color:#CD7F32;">SM</div><div style="font-size:8px;color:rgba(255,255,255,.35);">Sid</div><div class="podium-block" style="height:34px;background:rgba(205,127,50,.07);border:1px solid rgba(205,127,50,.18);color:#CD7F32;">3</div></div>
+          </div>
+          <div class="scroll-body" style="padding-top:8px;">
+            <div class="sep"></div>
+            <div class="card" style="background:rgba(124,111,247,.08);border-color:rgba(124,111,247,.22);display:flex;align-items:center;gap:9px;">
+              <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:#7C6FF7;width:18px;">#7</div>
+              <div class="avatar-sm">HJ</div>
+              <div style="flex:1;font-size:11px;color:#A78BFA;">You — Harpal J.</div>
+              <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:#A78BFA;">2,400 XP</div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:9px;margin-top:8px;">
+              <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,.3);width:18px;">#8</div>
+              <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(255,255,255,.4);">NP</div>
+              <div style="flex:1;font-size:11px;color:rgba(255,255,255,.45);">Neha Patel</div>
+              <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,.3);">2,280 XP</div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:9px;margin-top:8px;">
+              <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,.3);width:18px;">#9</div>
+              <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(255,255,255,.4);">VK</div>
+              <div style="flex:1;font-size:11px;color:rgba(255,255,255,.45);">Vikram K.</div>
+              <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,.3);">2,100 XP</div>
+            </div>
+          </div>
+          <div class="bnav">
+            <button class="bni" onclick="showScreen('s-home','Home Dashboard','S06')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg><span>Home</span></button>
+            <button class="bni" onclick="showScreen('s-library','Library','S16')"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="8" width="8" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="13" width="10" height="2" rx="1" stroke="currentColor" stroke-width="1.5"/></svg><span>Library</span></button>
+            <button class="bni center" onclick="showScreen('s-upload','Upload Material','S07')"><div class="plus-btn"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></button>
+            <button class="bni a"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 5h6M4 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Quiz</span></button>
+            <button class="bni" onclick="showScreen('s-profile','Profile','S19')"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Me</span></button>
+          </div>
+        </div>
+
+        <!-- S19 Profile -->
+        <div class="screen" id="s-profile" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="background:#111120;padding:14px 18px 18px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+              <div style="width:56px;height:56px;border-radius:50%;background:#7C6FF7;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:18px;color:#fff;">HJ</div>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;">Harpalsinh Jadav</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.35);">harpal@tatvasoft.com</div>
+              <div style="display:flex;gap:20px;margin-top:4px;">
+                <div style="text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;">142</div><div style="font-size:8px;color:rgba(255,255,255,.3);">Quizzes</div></div>
+                <div style="text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;">14</div><div style="font-size:8px;color:rgba(255,255,255,.3);">Streak</div></div>
+                <div style="text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;">2.4k</div><div style="font-size:8px;color:rgba(255,255,255,.3);">XP</div></div>
+                <div style="text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;">8</div><div style="font-size:8px;color:rgba(255,255,255,.3);">Badges</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="scroll-body" style="padding-top:12px;">
+            <div style="font-size:10px;color:rgba(255,255,255,.35);display:flex;justify-content:space-between;margin-bottom:4px;"><span>Level 7 — Scholar</span><span style="color:#7C6FF7;">2,400 / 3,000 XP</span></div>
+            <div style="height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;margin-bottom:14px;"><div style="width:80%;height:100%;background:#7C6FF7;border-radius:3px;"></div></div>
+            <div class="section-label" style="margin-top:0;">Badges earned</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:5px 9px;font-size:9px;color:rgba(255,255,255,.55);">🔥 14-day streak</div>
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:5px 9px;font-size:9px;color:rgba(255,255,255,.55);">🧠 100 quizzes</div>
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:5px 9px;font-size:9px;color:rgba(255,255,255,.55);">⚡ Speed learner</div>
+              <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:5px 9px;font-size:9px;color:rgba(255,255,255,.55);">📖 Deep reader</div>
+            </div>
+            <div class="section-label">Recent topics</div>
+            <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><div style="font-size:11px;color:rgba(255,255,255,.6);">React Native Architecture</div><div style="font-size:10px;color:#7C6FF7;">68%</div></div><div class="prog"><div class="prog-fill" style="width:68%;"></div></div></div>
+            <div class="card" style="margin-top:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><div style="font-size:11px;color:rgba(255,255,255,.6);">System Design</div><div style="font-size:10px;color:#F4A227;">20%</div></div><div class="prog"><div class="prog-fill" style="width:20%;background:#F4A227;"></div></div></div>
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <button class="btn-ghost" style="flex:1;font-size:11px;padding:10px;" onclick="showScreen('s-settings','Settings','S21')">Settings</button>
+              <button class="btn-ghost" style="flex:1;font-size:11px;padding:10px;" onclick="showScreen('s-leaderboard','Leaderboard','S18')">Leaderboard</button>
+            </div>
+          </div>
+          <div class="bnav">
+            <button class="bni" onclick="showScreen('s-home','Home Dashboard','S06')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg><span>Home</span></button>
+            <button class="bni" onclick="showScreen('s-library','Library','S16')"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="8" width="8" height="3" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="13" width="10" height="2" rx="1" stroke="currentColor" stroke-width="1.5"/></svg><span>Library</span></button>
+            <button class="bni center" onclick="showScreen('s-upload','Upload Material','S07')"><div class="plus-btn"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div></button>
+            <button class="bni" onclick="showScreen('s-quizsetup','Quiz Setup','S12')"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 5h6M4 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Quiz</span></button>
+            <button class="bni a"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Me</span></button>
+          </div>
+        </div>
+
+        <!-- S20 Notifications -->
+        <div class="screen" id="s-notifs" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="padding:6px 18px;display:flex;justify-content:space-between;align-items:center;">
+            <div class="screen-title">Notifications</div>
+            <div style="font-size:10px;color:#7C6FF7;cursor:pointer;">Mark all read</div>
+          </div>
+          <div class="scroll-body" style="padding-top:4px;">
+            <div class="section-label" style="margin-top:0;">Unread</div>
+            <div style="background:rgba(124,111,247,.07);border:1px solid rgba(124,111,247,.18);border-radius:11px;padding:12px 13px;display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:36px;height:36px;border-radius:9px;background:rgba(124,111,247,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🎯</div>
+              <div style="flex:1;"><div class="card-title" style="font-size:11px;">Quiz ready!</div><div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:3px;line-height:1.4;">Your 10-question Advanced quiz for React Native Ch. 1–3 is ready.</div><div style="font-size:9px;color:rgba(255,255,255,.25);margin-top:4px;">2 min ago</div></div>
+              <div style="width:7px;height:7px;border-radius:50%;background:#7C6FF7;flex-shrink:0;margin-top:2px;"></div>
+            </div>
+            <div style="background:rgba(244,162,39,.06);border:1px solid rgba(244,162,39,.15);border-radius:11px;padding:12px 13px;display:flex;gap:10px;align-items:flex-start;margin-top:8px;">
+              <div style="width:36px;height:36px;border-radius:9px;background:rgba(244,162,39,.14);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🔥</div>
+              <div style="flex:1;"><div class="card-title" style="font-size:11px;">Streak at risk!</div><div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:3px;line-height:1.4;">You haven't studied today. Keep your 14-day streak alive.</div><div style="font-size:9px;color:rgba(255,255,255,.25);margin-top:4px;">1 hr ago</div></div>
+              <div style="width:7px;height:7px;border-radius:50%;background:#F4A227;flex-shrink:0;margin-top:2px;"></div>
+            </div>
+            <div class="section-label">Earlier</div>
+            <div class="card" style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:36px;height:36px;border-radius:9px;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">✅</div>
+              <div style="flex:1;"><div class="card-title" style="font-size:11px;color:rgba(255,255,255,.55);">Material analyzed</div><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;line-height:1.4;">System Design PDF — 8 chapters & 40 quizzes generated.</div><div style="font-size:9px;color:rgba(255,255,255,.2);margin-top:4px;">Yesterday</div></div>
+            </div>
+            <div class="card" style="display:flex;gap:10px;align-items:flex-start;margin-top:8px;">
+              <div style="width:36px;height:36px;border-radius:9px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⚡</div>
+              <div style="flex:1;"><div class="card-title" style="font-size:11px;color:rgba(255,255,255,.55);">Level up!</div><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;line-height:1.4;">You've reached Level 7 — Scholar. 600 XP to Level 8.</div><div style="font-size:9px;color:rgba(255,255,255,.2);margin-top:4px;">2 days ago</div></div>
+            </div>
+            <div class="card" style="display:flex;gap:10px;align-items:flex-start;margin-top:8px;opacity:.55;">
+              <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏅</div>
+              <div style="flex:1;"><div class="card-title" style="font-size:11px;color:rgba(255,255,255,.45);">New badge earned</div><div style="font-size:10px;color:rgba(255,255,255,.25);margin-top:3px;line-height:1.4;">Speed Learner — 3 chapters in 1 session.</div><div style="font-size:9px;color:rgba(255,255,255,.2);margin-top:4px;">3 days ago</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- S21 Settings -->
+        <div class="screen" id="s-settings" style="background:#0D0D18;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div class="screen-header"><div class="screen-title">Settings</div></div>
+          <div class="scroll-body" style="padding-top:4px;">
+            <div class="section-label" style="margin-top:0;">Account</div>
+            <div class="card" style="display:flex;align-items:center;gap:10px;">
+              <div class="avatar-sm">HJ</div>
+              <div style="flex:1;"><div class="card-title">Harpalsinh Jadav</div><div class="card-sub">harpal@tatvasoft.com</div></div>
+              <div style="background:rgba(124,111,247,.15);border-radius:4px;padding:3px 7px;font-size:9px;color:#A78BFA;">PRO</div>
+            </div>
+            <div class="section-label">Preferences</div>
+            <div class="card" style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;"><div style="font-size:12px;color:rgba(255,255,255,.6);">Dark mode</div><div style="width:32px;height:18px;background:#7C6FF7;border-radius:9px;position:relative;"><div style="width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;right:2px;top:2px;"></div></div></div>
+              <div class="sep"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;"><div style="font-size:12px;color:rgba(255,255,255,.6);">Push notifications</div><div style="width:32px;height:18px;background:#7C6FF7;border-radius:9px;position:relative;"><div style="width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;right:2px;top:2px;"></div></div></div>
+              <div class="sep"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;"><div style="font-size:12px;color:rgba(255,255,255,.6);">Streak reminders</div><div style="width:32px;height:18px;background:rgba(255,255,255,.1);border-radius:9px;position:relative;"><div style="width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.4);position:absolute;left:2px;top:2px;"></div></div></div>
+              <div class="sep"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;"><div style="font-size:12px;color:rgba(255,255,255,.6);">Default difficulty</div><div style="font-size:11px;color:#7C6FF7;">Advanced ›</div></div>
+            </div>
+            <div class="section-label">Storage</div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><div style="font-size:11px;color:rgba(255,255,255,.45);">Used 2.1 GB of 5 GB</div><div style="font-size:10px;color:#7C6FF7;cursor:pointer;">Manage</div></div>
+              <div style="height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;"><div style="width:42%;height:100%;background:#7C6FF7;border-radius:3px;"></div></div>
+            </div>
+            <div class="section-label">More</div>
+            <div class="card" style="display:flex;flex-direction:column;gap:0;">
+              <div style="font-size:12px;color:rgba(255,255,255,.5);padding:9px 0;border-bottom:.5px solid rgba(255,255,255,.06);cursor:pointer;" onclick="showScreen('s-paywall','Plans / Paywall','S22')">Upgrade to Pro →</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.5);padding:9px 0;border-bottom:.5px solid rgba(255,255,255,.06);">Privacy & Data</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.5);padding:9px 0;border-bottom:.5px solid rgba(255,255,255,.06);">Help & Support</div>
+              <div style="font-size:12px;color:#EF4444;padding:9px 0;cursor:pointer;" onclick="showScreen('s-auth','Sign In','S03')">Sign Out</div>
+            </div>
+            <div style="height:20px;"></div>
+          </div>
+        </div>
+
+        <!-- S22 Paywall -->
+        <div class="screen" id="s-paywall" style="background:#07070F;">
+          <div class="status-bar"><div class="status-time">9:41</div><div class="status-icons">●●● 100%</div></div>
+          <div style="flex:1;padding:14px 18px 20px;overflow-y:auto;">
+            <div style="text-align:center;margin-bottom:18px;">
+              <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,111,247,.12);border:1px solid rgba(124,111,247,.25);border-radius:20px;padding:5px 12px;margin-bottom:12px;">
+                <svg width="12" height="12" viewBox="0 0 36 36" fill="none"><path d="M18 4L30 11v14L18 32 6 25V11z" fill="#7C6FF7" opacity=".5"/><path d="M18 4L30 11v14L18 32 6 25V11z" stroke="#7C6FF7" stroke-width="2" fill="none"/></svg>
+                <div style="font-size:10px;color:#A78BFA;font-weight:500;">Upgrade to Pro</div>
+              </div>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;line-height:1.2;">Unlock your full<br>learning potential</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:6px;">Cancel anytime · No hidden fees</div>
+            </div>
+            <div class="plan-card free" style="margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.45);">Free</div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:rgba(255,255,255,.35);">₹0</div></div>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="font-size:10px;color:rgba(255,255,255,.35);">✓ 5 materials/month</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.35);">✓ Basic + Medium quizzes</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.2);">✗ Ask AI locked</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.2);">✗ Pro difficulty locked</div>
+              </div>
+            </div>
+            <div class="plan-card pro" style="margin-bottom:14px;">
+              <div class="plan-badge-top">Most popular</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:#A78BFA;">Pro</div><div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;">₹299<span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.4);">/mo</span></div></div></div>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="font-size:10px;color:rgba(255,255,255,.65);">✓ Unlimited materials</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.65);">✓ All difficulty levels incl. Pro</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.65);">✓ Ask AI per chapter</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.65);">✓ 5 GB storage</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.65);">✓ Priority processing</div>
+              </div>
+            </div>
+            <button class="btn-primary">Start 7-day free trial</button>
+            <div style="text-align:center;font-size:9px;color:rgba(255,255,255,.2);margin-top:8px;">Then ₹299/month. Cancel anytime.</div>
+            <div style="text-align:center;font-size:9px;color:#7C6FF7;margin-top:6px;cursor:pointer;">Restore purchases</div>
+          </div>
+        </div>
+
+      </div><!-- end phone-screen -->
+    </div><!-- end phone-frame -->
+  </div><!-- end phone-viewport -->
+
+  <!-- WEB viewport -->
+  <div id="web-viewport" style="display:none;flex:1;overflow:hidden;">
+
+    <!-- W01 Web Dashboard -->
+    <div class="web-screen active" id="w-dashboard">
+      <div class="web-sidebar-inner">
+        <div class="ws-logo">
+          <div class="logo-hex" style="width:24px;height:24px;"><svg width="12" height="12" viewBox="0 0 36 36" fill="none"><path d="M18 4L30 11v14L18 32 6 25V11z" fill="#7C6FF7" opacity=".4"/><path d="M18 4L30 11v14L18 32 6 25V11z" stroke="#7C6FF7" stroke-width="2" fill="none"/></svg></div>
+          <div class="logo-text" style="font-size:14px;">Study<span>Forge</span></div>
+        </div>
+        <div class="ws-nav active">🏠 Dashboard</div>
+        <div class="ws-nav">📚 My Library</div>
+        <div class="ws-nav">☁️ Upload</div>
+        <div class="ws-nav">🎯 Quizzes</div>
+        <div class="ws-nav">🔍 Explore</div>
+        <div class="ws-nav">📊 Analytics</div>
+        <div style="flex:1;"></div>
+        <div class="ws-nav">⚙️ Settings</div>
+      </div>
+      <div class="web-main-content">
+        <div class="web-topbar">
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:7px;padding:7px 13px;width:220px;font-size:11px;color:rgba(255,255,255,.3);">🔍 Search topics, materials...</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="background:rgba(244,162,39,.1);border-radius:6px;padding:5px 11px;font-size:10px;color:#F4A227;">🔥 14 day streak</div>
+            <div class="avatar-sm">HJ</div>
+          </div>
+        </div>
+        <div class="web-content-area">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;margin-bottom:14px;">Good morning, Harpal 👋</div>
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-label">Materials</div><div class="kpi-val">24</div><div class="kpi-change">↑ 3 this week</div></div>
+            <div class="kpi-card"><div class="kpi-label">Quizzes taken</div><div class="kpi-val">142</div><div class="kpi-change">↑ 12 this week</div></div>
+            <div class="kpi-card"><div class="kpi-label">Accuracy</div><div class="kpi-val">78%</div><div class="kpi-change">↑ 4% vs last week</div></div>
+            <div class="kpi-card"><div class="kpi-label">XP earned</div><div class="kpi-val">2.4k</div><div class="kpi-change">Level 7 — Scholar</div></div>
+          </div>
+          <div class="content-grid">
+            <div class="content-panel">
+              <div class="cp-title">Recent materials</div>
+              <div class="doc-row"><div class="doc-icon" style="background:rgba(124,111,247,.12);">📄</div><div class="doc-name">React Native Architecture.pdf</div><div class="chip chip-a" style="font-size:9px;">68% done</div></div>
+              <div class="doc-row"><div class="doc-icon" style="background:rgba(59,130,246,.1);">🧠</div><div class="doc-name">System Design Fundamentals.pptx</div><div class="chip chip-a" style="font-size:9px;">20% done</div></div>
+              <div class="doc-row"><div class="doc-icon" style="background:rgba(16,185,129,.1);">🎤</div><div class="doc-name">Lecture — Data Structures</div><div class="chip chip-g" style="font-size:9px;">Done</div></div>
+              <div class="doc-row" style="border-bottom:none;"><div class="doc-icon" style="background:rgba(244,162,39,.1);">🔗</div><div class="doc-name">MDN — JS Closures</div><div class="chip chip-v" style="font-size:9px;">New</div></div>
+            </div>
+            <div class="content-panel">
+              <div class="cp-title">Quiz accuracy (7d)</div>
+              <div class="chart-area">
+                <div class="bar" style="height:40%;background:rgba(124,111,247,.2);"></div>
+                <div class="bar" style="height:58%;background:rgba(124,111,247,.28);"></div>
+                <div class="bar" style="height:50%;background:rgba(124,111,247,.2);"></div>
+                <div class="bar" style="height:72%;background:rgba(124,111,247,.32);"></div>
+                <div class="bar" style="height:65%;background:rgba(124,111,247,.25);"></div>
+                <div class="bar" style="height:82%;background:rgba(124,111,247,.38);"></div>
+                <div class="bar" style="height:78%;background:#7C6FF7;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- W02 Admin Panel -->
+    <div class="web-screen" id="w-admin">
+      <div class="web-sidebar-inner" style="width:170px;">
+        <div class="ws-logo">
+          <div class="logo-hex" style="width:22px;height:22px;"><svg width="11" height="11" viewBox="0 0 36 36" fill="none"><path d="M18 4L30 11v14L18 32 6 25V11z" fill="#7C6FF7" opacity=".4"/><path d="M18 4L30 11v14L18 32 6 25V11z" stroke="#7C6FF7" stroke-width="2" fill="none"/></svg></div>
+          <div class="logo-text" style="font-size:13px;">Study<span>Forge</span></div>
+          <div style="font-size:8px;background:rgba(124,111,247,.15);color:#A78BFA;border-radius:3px;padding:1px 5px;margin-left:2px;">Admin</div>
+        </div>
+        <div style="font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.15);padding:6px 6px 3px;">Overview</div>
+        <div class="ws-nav active" style="font-size:10px;padding:6px 8px;">📊 Dashboard</div>
+        <div class="ws-nav" style="font-size:10px;padding:6px 8px;">👥 Users</div>
+        <div class="ws-nav" style="font-size:10px;padding:6px 8px;">📄 Materials</div>
+        <div class="ws-nav" style="font-size:10px;padding:6px 8px;">🎯 Quizzes</div>
+        <div style="font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.15);padding:6px 6px 3px;">System</div>
+        <div class="ws-nav" style="font-size:10px;padding:6px 8px;">🤖 AI Models</div>
+        <div class="ws-nav" style="font-size:10px;padding:6px 8px;">📦 Storage</div>
+        <div class="ws-nav" style="font-size:10px;padding:6px 8px;">💳 Billing</div>
+        <div style="flex:1;"></div>
+        <div class="ws-nav" style="font-size:10px;padding:6px 8px;">⚙️ Settings</div>
+      </div>
+      <div class="web-main-content">
+        <div class="web-topbar">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#fff;">Dashboard Overview</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:5px 11px;font-size:10px;color:rgba(255,255,255,.4);">Last 30 days ▾</div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#E85D2F;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;">AD</div>
+          </div>
+        </div>
+        <div class="web-content-area">
+          <div class="admin-kpi-grid">
+            <div class="kpi-card"><div class="kpi-label">Total users</div><div class="kpi-val" style="font-size:17px;">12.4k</div><div class="kpi-change">↑ 18% MoM</div></div>
+            <div class="kpi-card"><div class="kpi-label">Active today</div><div class="kpi-val" style="font-size:17px;">1,287</div><div class="kpi-change">↑ 6%</div></div>
+            <div class="kpi-card"><div class="kpi-label">Materials processed</div><div class="kpi-val" style="font-size:17px;">89.2k</div><div class="kpi-change">↑ 22%</div></div>
+            <div class="kpi-card"><div class="kpi-label">LLM API calls</div><div class="kpi-val" style="font-size:17px;">4.1M</div><div class="kpi-change">↑ 31%</div></div>
+            <div class="kpi-card"><div class="kpi-label">Avg accuracy</div><div class="kpi-val" style="font-size:17px;">73%</div><div class="kpi-change" style="color:#EF4444;">↓ 2%</div></div>
+          </div>
+          <div class="admin-table" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);">
+              <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:#fff;">Recent users</div>
+              <div style="display:flex;gap:6px;">
+                <div style="font-size:9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:4px 10px;color:rgba(255,255,255,.4);">All plans ▾</div>
+                <div style="font-size:9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:4px 10px;color:rgba(255,255,255,.4);">Export</div>
+              </div>
+            </div>
+            <div class="admin-th"><div>User</div><div>Email</div><div>Plan</div><div>Materials</div><div>Status</div></div>
+            <div class="admin-tr">
+              <div class="user-cell"><div class="user-ava" style="background:#7C6FF7;">HJ</div><div style="font-size:10px;color:rgba(255,255,255,.75);">Harpalsinh J.</div></div>
+              <div>harpal@tatvasoft.com</div><div style="color:#A78BFA;">Pro</div><div>24</div>
+              <div><span class="status-pill active-pill">Active</span></div>
+            </div>
+            <div class="admin-tr">
+              <div class="user-cell"><div class="user-ava" style="background:#E85D2F;">RA</div><div style="font-size:10px;color:rgba(255,255,255,.75);">Riya Agarwal</div></div>
+              <div>riya.ag@gmail.com</div><div style="color:#F4A227;">Trial</div><div>7</div>
+              <div><span class="status-pill trial-pill">Trial</span></div>
+            </div>
+            <div class="admin-tr">
+              <div class="user-cell"><div class="user-ava" style="background:#10B981;">SM</div><div style="font-size:10px;color:rgba(255,255,255,.75);">Siddharth M.</div></div>
+              <div>sid.m@iitb.ac.in</div><div style="color:#34D399;">Free</div><div>3</div>
+              <div><span class="status-pill active-pill">Active</span></div>
+            </div>
+            <div class="admin-tr">
+              <div class="user-cell"><div class="user-ava" style="background:#F4A227;">NP</div><div style="font-size:10px;color:rgba(255,255,255,.75);">Neha Patel</div></div>
+              <div>neha.p@outlook.com</div><div style="color:#A78BFA;">Pro</div><div>31</div>
+              <div><span class="status-pill inactive-pill">Inactive</span></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="content-panel">
+              <div class="cp-title">LLM model usage</div>
+              <div style="display:flex;flex-direction:column;gap:7px;">
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:56px;font-size:9px;color:rgba(255,255,255,.4);">Gemini</div><div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div style="width:65%;height:100%;background:#7C6FF7;border-radius:3px;"></div></div><div style="font-size:9px;color:rgba(255,255,255,.35);width:26px;text-align:right;">65%</div></div>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:56px;font-size:9px;color:rgba(255,255,255,.4);">Local LLM</div><div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div style="width:28%;height:100%;background:#E85D2F;border-radius:3px;"></div></div><div style="font-size:9px;color:rgba(255,255,255,.35);width:26px;text-align:right;">28%</div></div>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:56px;font-size:9px;color:rgba(255,255,255,.4);">Fallback</div><div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div style="width:7%;height:100%;background:#F4A227;border-radius:3px;"></div></div><div style="font-size:9px;color:rgba(255,255,255,.35);width:26px;text-align:right;">7%</div></div>
+              </div>
+            </div>
+            <div class="content-panel">
+              <div class="cp-title">Material types</div>
+              <div style="display:flex;flex-direction:column;gap:7px;">
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:40px;font-size:9px;color:rgba(255,255,255,.4);">PDF</div><div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div style="width:55%;height:100%;background:#7C6FF7;border-radius:3px;"></div></div><div style="font-size:9px;color:rgba(255,255,255,.35);width:26px;text-align:right;">55%</div></div>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:40px;font-size:9px;color:rgba(255,255,255,.4);">Video</div><div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div style="width:22%;height:100%;background:#22D3EE;border-radius:3px;"></div></div><div style="font-size:9px;color:rgba(255,255,255,.35);width:26px;text-align:right;">22%</div></div>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:40px;font-size:9px;color:rgba(255,255,255,.4);">Other</div><div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div style="width:23%;height:100%;background:rgba(255,255,255,.2);border-radius:3px;"></div></div><div style="font-size:9px;color:rgba(255,255,255,.35);width:26px;text-align:right;">23%</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end web-viewport -->
+
+</div><!-- end main -->
+</div><!-- end app -->
+
+<script>
+let currentMode = 'mobile';
+
+function showScreen(id, title, code) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  document.getElementById('topbar-title').textContent = code + ' — ' + title;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function showWeb(id, title, code) {
+  setMode('web');
+  document.querySelectorAll('.web-screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  document.getElementById('topbar-title').textContent = code + ' — ' + title;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  const mw = document.getElementById('mobile-viewport');
+  const ww = document.getElementById('web-viewport');
+  const mb = document.getElementById('mode-mobile');
+  const wb = document.getElementById('mode-web');
+  if (mode === 'mobile') {
+    mw.style.display = 'flex'; ww.style.display = 'none';
+    mb.classList.add('active'); wb.classList.remove('active');
+  } else {
+    mw.style.display = 'none'; ww.style.display = 'flex';
+    wb.classList.add('active'); mb.classList.remove('active');
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+name: Deploy API
+
+on:
+  push:
+    tags:
+      - 'v*'              # triggers only on release tags, e.g. v1.0.0
+
+jobs:
+  deploy:
+    name: Deploy API to production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build API
+        run: pnpm --filter @studyforge/api build
+
+      # TODO: add deployment step (Railway / Fly.io / Docker push)
+      - name: Deploy
+        run: echo "Deploy step — configure for your hosting provider"

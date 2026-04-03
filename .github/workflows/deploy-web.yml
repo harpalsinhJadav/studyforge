@@ -1,0 +1,34 @@
+name: Deploy Web & Admin
+
+on:
+  push:
+    tags:
+      - 'v*'              # triggers only on release tags, e.g. v1.0.0
+
+jobs:
+  deploy:
+    name: Deploy to CDN
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build web
+        run: pnpm --filter @studyforge/web build
+
+      - name: Build admin
+        run: pnpm --filter @studyforge/admin build
+
+      # TODO: upload dist/ to Cloudflare Pages / S3 / Vercel
+      - name: Deploy
+        run: echo "Deploy step — configure for your CDN provider"
