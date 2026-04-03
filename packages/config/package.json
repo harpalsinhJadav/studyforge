@@ -1,0 +1,14 @@
+{
+  "name": "@studyforge/config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared ESLint, TypeScript, and Prettier configs",
+  "exports": {
+    "./eslint": "./eslint.js",
+    "./eslint/react": "./eslint-react.js",
+    "./tsconfig": "./tsconfig.json",
+    "./tsconfig/react": "./tsconfig.react.json",
+    "./tsconfig/react-native": "./tsconfig.react-native.json",
+    "./tsconfig/node": "./tsconfig.node.json"
+  }
+}

@@ -1,0 +1,19 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { StatusBar } from 'expo-status-bar';
+import RootNavigator from './src/navigation/RootNavigator';
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
+});
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer>
+        <StatusBar style="light" backgroundColor="#0D0D18" />
+        <RootNavigator />
+      </NavigationContainer>
+    </QueryClientProvider>
+  );
+}
